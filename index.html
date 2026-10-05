@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T-Spin Dojo · Double Trainer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b1d2b'/%3E%3Cg fill='%23a855f7'%3E%3Crect x='5' y='6' width='7' height='7' rx='1.5'/%3E%3Crect x='12.5' y='6' width='7' height='7' rx='1.5'/%3E%3Crect x='20' y='6' width='7' height='7' rx='1.5'/%3E%3Crect x='12.5' y='13.5' width='7' height='7' rx='1.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="brand-text"><b>T-Spin Dojo</b><small>T-spin double trainer</small></span>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" id="tab-learn" data-page="learn" role="tab">Learn</button>
+    <button class="tab" id="tab-practice" data-page="practice" role="tab">Practice</button>
+  </nav>
+  <button class="link-btn" id="helpBtn" title="Rules and controls">Controls &amp; rules</button>
+</header>
+
+<main>
+  <!-- ============ LEARN ============ -->
+  <section id="page-learn" class="page active">
+    <aside class="setup-list" id="setupList" aria-label="Setups"></aside>
+
+    <div class="learn-stage">
+      <div class="board-col">
+        <div class="board-wrap">
+          <canvas id="learnCanvas"></canvas>
+          <div class="banner" id="learnBanner" hidden></div>
+        </div>
+        <div class="anim-controls">
+          <button id="lRestart" title="Back to start" aria-label="Back to start">&#9198;</button>
+          <button id="lPrev" title="Previous step" aria-label="Previous step">&#9664;</button>
+          <button id="lPlay" class="primary" title="Play / pause">&#9654; Play</button>
+          <button id="lNext" title="Next step" aria-label="Next step">&#9654;</button>
+        </div>
+        <label class="check"><input type="checkbox" id="lMirror"> Mirror image</label>
+      </div>
+
+      <article class="lesson" id="lesson">
+        <div class="lesson-head">
+          <span class="level" id="lLevel"></span>
+          <h1 id="lName"></h1>
+        </div>
+        <p class="blurb" id="lBlurb"></p>
+
+        <h3 id="hSpot">How to spot it</h3>
+        <ul id="lSpot" class="bullets"></ul>
+
+        <h3>The moves</h3>
+        <ol id="lSteps" class="steps"></ol>
+
+        <p id="lNote" class="lesson-note"></p>
+
+        <div class="cta">
+          <button class="primary big" id="lTry">Practice this setup</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ PRACTICE ============ -->
+  <section id="page-practice" class="page">
+    <div class="practice-layout">
+      <div class="side left">
+        <div class="panel">
+          <h4>Hold <kbd>C</kbd></h4>
+          <canvas id="holdCanvas" class="mini"></canvas>
+        </div>
+        <div class="panel stats">
+          <h4>Session</h4>
+          <div class="stat"><span>Streak</span><b id="sStreak">0</b></div>
+          <div class="stat"><span>Best streak</span><b id="sBest">0</b></div>
+          <div class="stat"><span>Solved clean</span><b id="sClean">0</b></div>
+          <button class="link-btn small" id="resetStats">Reset stats</button>
+        </div>
+        <div class="panel">
+          <h4>Mastery</h4>
+          <div id="mastery" class="mastery"></div>
+        </div>
+      </div>
+
+      <div class="center">
+        <div class="scenario-bar">
+          <div>
+            <div class="scenario-label">Scenario</div>
+            <div class="scenario-name" id="pName">&nbsp;</div>
+          </div>
+          <div class="scenario-buttons">
+            <button id="pHint" title="Hint (H)">Hint <kbd>H</kbd></button>
+            <button id="pRetry" title="Retry (R)">Retry <kbd>R</kbd></button>
+            <button id="pNext" title="New scenario (N)">Next <kbd>N</kbd></button>
+          </div>
+        </div>
+        <div class="buildbar" id="buildBar" hidden>
+          <div class="chips" id="buildChips"></div>
+          <div class="build-msg" id="buildMsg"></div>
+          <button id="bUndo" hidden>Undo piece <kbd>U</kbd></button>
+        </div>
+        <div class="board-wrap practice">
+          <canvas id="gameCanvas"></canvas>
+          <div class="banner" id="pBanner" hidden></div>
+          <div class="result" id="pResult" hidden>
+            <div class="result-title" id="rTitle"></div>
+            <div class="result-text" id="rText"></div>
+            <div class="result-buttons">
+              <button id="rRetry">Retry <kbd>R</kbd></button>
+              <button id="rSolution">Show solution</button>
+              <button class="primary" id="rNext">Next <kbd>N</kbd></button>
+            </div>
+          </div>
+        </div>
+        <div class="hintbar" id="hintBar" hidden></div>
+      </div>
+
+      <div class="side right">
+        <div class="panel">
+          <h4>Next</h4>
+          <canvas id="nextCanvas" class="mini tall"></canvas>
+        </div>
+        <div class="panel settings">
+          <h4>Options</h4>
+          <label class="row">Drill type
+            <select id="oMode">
+              <option value="build">Build + spin</option>
+              <option value="spin">Spin only</option>
+              <option value="mixed">Mixed</option>
+            </select>
+          </label>
+          <label class="row">Gravity
+            <select id="oGravity">
+              <option value="0">Off (relaxed)</option>
+              <option value="1">Slow</option>
+              <option value="3">Medium</option>
+              <option value="8">Fast</option>
+            </select>
+          </label>
+          <label class="check" title="A resting piece locks by itself after half a second. Moving or rotating it resets the timer (up to 15 times). Off: it only locks when you hard drop."><input type="checkbox" id="oLock" checked> Lock delay (0.5 s)</label>
+          <label class="check"><input type="checkbox" id="oMirror" checked> Random mirroring</label>
+          <label class="check"><input type="checkbox" id="oNoise" checked> Messy floor below</label>
+          <label class="check"><input type="checkbox" id="oName" checked> Show setup name</label>
+          <label class="check"><input type="checkbox" id="oGhost" checked> Ghost piece</label>
+          <details>
+            <summary>Spin setups in rotation</summary>
+            <div id="oSetups" class="setup-checks"></div>
+          </details>
+          <details>
+            <summary>Build drills in rotation</summary>
+            <div id="oBuilds" class="setup-checks"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="planDialog">
+  <form method="dialog">
+    <h2 id="planTitle">One way to build it</h2>
+    <div class="plan-body">
+      <canvas id="planCanvas"></canvas>
+      <div>
+        <p id="planText" class="small"></p>
+        <div class="plan-nav">
+          <button type="button" id="planPrev">&#9664; Back</button>
+          <button type="button" id="planNext">Next &#9654;</button>
+        </div>
+      </div>
+    </div>
+    <menu><button class="primary" value="close">Close</button></menu>
+  </form>
+</dialog>
+
+<dialog id="helpDialog">
+  <form method="dialog">
+    <h2>Controls &amp; rules</h2>
+    <div class="help-grid">
+      <div><kbd>&larr;</kbd> <kbd>&rarr;</kbd></div><div>Move (hold to slide)</div>
+      <div><kbd>&darr;</kbd></div><div>Soft drop</div>
+      <div><kbd>Space</kbd></div><div>Hard drop and lock</div>
+      <div><kbd>&uarr;</kbd> / <kbd>X</kbd></div><div>Rotate clockwise</div>
+      <div><kbd>Z</kbd> / <kbd>Ctrl</kbd></div><div>Rotate counter-clockwise</div>
+      <div><kbd>C</kbd> / <kbd>Shift</kbd></div><div>Hold</div>
+      <div><kbd>H</kbd></div><div>Hint (press twice for the target)</div>
+      <div><kbd>R</kbd> / <kbd>N</kbd></div><div>Retry / next scenario</div>
+      <div><kbd>U</kbd></div><div>Undo the last piece (build drills)</div>
+    </div>
+    <p class="small">Rules follow the modern guideline: 10&times;20 field with a 7-piece bag, Super Rotation System with wall kicks, hold, ghost piece, and lock delay with 15 move resets. A T-spin needs the T to lock right after a rotation with at least three of its four corners blocked. In build drills you drop one to three pieces first to create the setup, then the T. Any placement that keeps a T-spin double possible is accepted, and Hold lets you use the build pieces in any order. A <em>double</em> also needs two lines cleared. If only the back corners are blocked it counts as a mini, which does not satisfy these drills.</p>
+    <menu><button class="primary" value="close">Got it</button></menu>
+  </form>
+</dialog>
+
+<script src="js/engine.js"></script>
+<script src="js/setups.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
